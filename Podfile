@@ -8,6 +8,7 @@ target 'RxSwiftExample' do
   # Pods for RxSwiftExample
 	pod 'RxSwift'
 	pod 'RxCocoa'
+  pod 'RxSwiftExt'
   #pod 'RxBiBinding'
 
   target 'RxSwiftExampleTests' do
