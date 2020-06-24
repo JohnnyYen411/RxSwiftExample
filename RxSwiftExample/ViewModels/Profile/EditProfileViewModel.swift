@@ -20,6 +20,7 @@ class EditProfileViewModel {
     let isModified: Observable<Bool>
     let name: BehaviorSubject<String>
     let birthday: BehaviorSubject<String>
+    let showError: Observable<String>
 
     //Events
     let didSave: Observable<Void>
@@ -36,9 +37,16 @@ class EditProfileViewModel {
 
         let saveProfile = saveTap.withLatestFrom(inputs)
             .map { (provider.getProfile().getUuid(), $0, $1) }
+            .flatMap { provider.write($0).materialize() }
 
-        didSave = provider.update(saveProfile)
-            .filter { $0 }
-            .map { _ in () }
+        didSave = saveProfile.elements()
+        showError = saveProfile.errors()
+            .map { error in
+                switch error {
+                case StorageServices.Errors.entityNotFound(_): return "Entity not found"
+                case StorageServices.Errors.write(_): return "Unable to write data"
+                default: return "Unknown error."
+                }
+            }
     }
 }

@@ -26,13 +26,6 @@ class ProfileProvider {
         self.storageServices = storageServices
     }
 
-//    init(_ name: String, _ birthday: String) {
-//        let p = Profile(name: name, birthday: birthday)
-//        profile = p
-//        self.name.onNext(name)
-//        self.birthday.onNext(birthday)
-//    }
-
     deinit {
         name.onCompleted()
         birthday.onCompleted()
@@ -42,24 +35,20 @@ class ProfileProvider {
         return profile
     }
 
-    func create(_ profile: Observable<Profile>) -> Observable<Bool> {
-        let storServ = storageServices
-        return profile
-            .flatMap { storServ.insert(profile: $0) }
-            .map { _ in true }
+    func create(_ profile: Profile) -> Observable<Profile> {
+        return storageServices.insert(profile: profile)
     }
 
-    func update(_ profile: Observable<(String, String, String)>) -> Observable<Bool> {
+    func write(_ profile: (String, String, String)) -> Observable<Void> {
         let storServ = storageServices
-        return profile
-            .flatMap { storServ.update(uuid: $0, name: $1, birthday: $2) }
+        return storServ.write(uuid: profile.0, name: profile.1, birthday: profile.2)
             .flatMap { storServ.fetch(uuid: $0) }
             .map { [weak self] in
-                self?.profile = $0
-                self?.name.onNext($0.name)
-                self?.birthday.onNext($0.birthday)
+                    self?.profile = $0
+                    self?.name.onNext($0.name)
+                    self?.birthday.onNext($0.birthday)
+                    return ()
             }
-            .map { _ in true }
     }
 
     func isModified(_ inputs: Observable<(String, String)>) -> Observable<Bool> {

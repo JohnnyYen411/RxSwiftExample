@@ -85,11 +85,13 @@ class ProfileListTests: XCTestCase {
         let mockServices = mockStorageServices!
 
         scheduler.createColdObservable([.next(1, ())])
-            .flatMap {
-                mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
-            .map {
-                _ in () }
-            .bind(to: viewModel.createProfile)
+            .flatMap { mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
+            .map { _ in () }
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.createProfile.onNext($0)
+            }, onError: { error in
+                XCTAssertNil(error)
+            })
             .disposed(by: disposeBag)
 
         scheduler.start()

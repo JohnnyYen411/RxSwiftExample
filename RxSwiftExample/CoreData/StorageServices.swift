@@ -12,6 +12,16 @@ import CoreData
 
 struct StorageServices {
 
+    enum Errors: Error {
+        case fetchAll
+        case deleteAll
+
+        case insert(uuid: String)
+        case entityNotFound(uuid: String)
+        case fetch(uuid: String)
+        case write(uuid: String)
+    }
+
     private let backgroundContext: NSManagedObjectContext
 
     init() {
@@ -37,7 +47,7 @@ struct StorageServices {
                     }
                     observer.onNext(result)
                 } catch {
-                    observer.onError(StorageServicesError.fetchAll)
+                    observer.onError(Errors.fetchAll)
                 }
             }
 
@@ -57,7 +67,7 @@ struct StorageServices {
 
                     observer.onNext(())
                 } catch {
-                    observer.onError(StorageServicesError.deleteAll)
+                    observer.onError(Errors.deleteAll)
                 }
             }
 
@@ -81,7 +91,7 @@ struct StorageServices {
                     }
                     observer.onNext(profile)
                 } catch {
-                    observer.onError(StorageServicesError.insert(uuid: profile.getUuid()))
+                    observer.onError(Errors.insert(uuid: profile.getUuid()))
                 }
             }
 
@@ -89,7 +99,7 @@ struct StorageServices {
         }
     }
 
-    func update(uuid: String, name: String, birthday: String) -> Observable<String> {
+    func write(uuid: String, name: String, birthday: String) -> Observable<String> {
         let context = backgroundContext
         let request = ProfileEntity.profileEntityFetchRequest()
         request.predicate = NSPredicate(format: "uuid == %@", uuid)
@@ -108,10 +118,10 @@ struct StorageServices {
 
                         observer.onNext(uuid)
                     } else {
-                        observer.onError(StorageServicesError.entityNotFound(uuid: uuid))
+                        observer.onError(Errors.entityNotFound(uuid: uuid))
                     }
                 } catch {
-                    observer.onError(StorageServicesError.fetch(uuid: uuid))
+                    observer.onError(Errors.write(uuid: uuid))
                 }
             }
 
@@ -131,23 +141,14 @@ struct StorageServices {
                     if let firstEntity = entities.first {
                         observer.onNext(firstEntity.profile)
                     } else {
-                        observer.onError(StorageServicesError.entityNotFound(uuid: uuid))
+                        observer.onError(Errors.entityNotFound(uuid: uuid))
                     }
                 } catch {
-                    observer.onError(StorageServicesError.fetch(uuid: uuid))
+                    observer.onError(Errors.fetch(uuid: uuid))
                 }
             }
 
             return Disposables.create()
         }
     }
-}
-
-enum StorageServicesError: Error {
-    case fetchAll
-    case deleteAll
-
-    case insert(uuid: String)
-    case entityNotFound(uuid: String)
-    case fetch(uuid: String)
 }

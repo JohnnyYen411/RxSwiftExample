@@ -95,6 +95,8 @@ class EditProfileTests: XCTestCase {
                 XCTAssert($0.name == "Modified Name")
                 XCTAssert($0.birthday == "Modified Birthday")
                 fetchExpectation.fulfill()
+            }, onError: { error in
+                XCTAssertNil(error)
             })
             .disposed(by: disposeBag)
 

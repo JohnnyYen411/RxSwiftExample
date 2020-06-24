@@ -52,6 +52,17 @@ class EditProfileViewController: UIViewController, Storyboarded {
         saveBarButton.rx.tap
             .bind(to: viewModel.saveTap)
             .disposed(by: disposeBag)
+
+        viewModel.showError
+            .subscribe(onNext: { [weak self] in
+                self?.showError(message: $0)
+            })
+            .disposed(by: disposeBag)
     }
 
+    func showError(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }

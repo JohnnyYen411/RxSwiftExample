@@ -25,30 +25,26 @@ class ProfileListProvider {
         providers.onCompleted()
     }
 
-    func update(_ observable: Observable<Void>) -> Observable<Void> {
+    func update() -> Observable<Void> {
         let storServ = storageServices
-        return observable
-            .flatMap {
-                storServ.fetchAll() }
-            .map {
-                [ProfileProvider]($0, storServ) }
+        return storServ.fetchAll()
+            .map { [ProfileProvider]($0, storServ) }
             .map { [weak self] in
                 self?.list = $0
                 self?.providers.onNext($0)
             }
     }
 
-    func clearAll(_ observable: Observable<Void>) -> Observable<Void> {
+    func clearAll() -> Observable<Void> {
         let storServ = storageServices
-        return observable
-            .flatMap { storServ.deleteAll() }
+//        return storServ.deleteAll()
+        return Observable.error(StorageServices.Errors.deleteAll)
             .flatMap { storServ.fetchAll() }
             .map { [ProfileProvider]($0, storServ) }
             .map { [weak self] in
                 self?.list = $0
                 self?.providers.onNext($0)
             }
-
     }
 }
 

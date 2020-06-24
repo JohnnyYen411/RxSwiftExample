@@ -41,7 +41,7 @@ class StorageServicesTests: XCTestCase {
     }
 
     func testFetchAll() throws {
-        let inserted = scheduler.createObserver(Bool.self)
+        let inserted = scheduler.createObserver(Profile.self)
         let mockServices = mockStorageServices!
 
         let fetchExpectation = expectation(description: "")
@@ -56,10 +56,12 @@ class StorageServicesTests: XCTestCase {
         scheduler.createColdObservable([.next(1, ()),
                                         .next(2, ()),
                                         .next(3, ())])
-            .flatMap {
-                mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
-            .map { _ in true }
-            .bind(to: inserted)
+            .flatMap { mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
+            .subscribe(onNext: {
+                inserted.onNext($0)
+            }, onError: { error in
+                XCTAssertNotNil(error)
+            })
             .disposed(by: disposeBag)
 
         scheduler.start()
@@ -81,6 +83,8 @@ class StorageServicesTests: XCTestCase {
                 XCTAssert(profile.name == "Test Name")
                 XCTAssert(profile.birthday == "Test Birthday")
                 fetchExpectation.fulfill()
+            }, onError: { error in
+                XCTAssertNil(error)
             })
             .disposed(by: disposeBag)
 
@@ -97,12 +101,14 @@ class StorageServicesTests: XCTestCase {
         let fetchExpectation = expectation(description: "Check profile has been modified")
         scheduler.createColdObservable([.next(1, ())])
             .flatMap { mockServices.insert(profile: profile) }
-            .flatMap { _ in mockServices.update(uuid: profile.getUuid(), name: "Modified Name", birthday: "Modified Birthday") }
+            .flatMap { _ in mockServices.write(uuid: profile.getUuid(), name: "Modified Name", birthday: "Modified Birthday") }
             .flatMap { _ in mockServices.fetch(uuid: profile.getUuid()) }
             .subscribe(onNext: { profile in
                 XCTAssert(profile.name == "Modified Name")
                 XCTAssert(profile.birthday == "Modified Birthday")
                 fetchExpectation.fulfill()
+            }, onError: { error in
+                XCTAssertNil(error)
             })
             .disposed(by: disposeBag)
 

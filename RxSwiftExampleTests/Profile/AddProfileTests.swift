@@ -85,10 +85,12 @@ class AddProfileTests: XCTestCase {
 
         let fetchExpectation = expectation(description: "")
         viewModel.didCreateProfile
-            .flatMap { mocServices.fetchAll() }
+            .flatMap { _ in mocServices.fetchAll() }
             .subscribe(onNext: {
                 XCTAssertEqual($0.count, 1)
                 fetchExpectation.fulfill()
+            }, onError: { error in
+                XCTAssertNil(error)
             })
             .disposed(by: disposeBag)
 

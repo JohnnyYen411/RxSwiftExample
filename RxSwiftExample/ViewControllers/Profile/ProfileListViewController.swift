@@ -39,6 +39,12 @@ class ProfileListViewController: UIViewController, Storyboarded {
             .subscribe()
             .disposed(by: disposeBag)
 
+        viewModel.showError
+            .subscribe(onNext: { [weak self] in
+                self?.showError(message: $0)
+            })
+            .disposed(by: disposeBag)
+
         viewModel.profileList
             .bind(to: tableView.rx.items(cellIdentifier: "ProfileCell", cellType: ProfileListTableViewCell.self)) { (row, element, cell) in
                 element.name
@@ -62,6 +68,12 @@ class ProfileListViewController: UIViewController, Storyboarded {
         tableView.rx.modelSelected(ProfileProvider.self)
             .bind(to: viewModel.toProfile)
             .disposed(by: disposeBag)
+    }
+
+    func showError(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
