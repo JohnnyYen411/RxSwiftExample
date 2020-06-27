@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class MainViewController: UIViewController, Storyboarded {
+class MainViewController: BaseViewController, Storyboarded {
 
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var weatherButton: UIButton!
@@ -22,7 +22,6 @@ class MainViewController: UIViewController, Storyboarded {
         super.viewDidLoad()
 
         self.title = "Main"
-//        viewModel.coordinator = coordinator
 
         profileButton.rx.tap
             .bind(to: viewModel.toProfile)

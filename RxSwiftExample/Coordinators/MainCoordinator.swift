@@ -20,6 +20,14 @@ class MainCoordinator: Coordinator<Void> {
             .subscribe()
             .disposed(by: disposeBag)
 
+        vc.viewModel.toWeather
+            .flatMap { [weak self] _ -> Observable<Void> in
+                guard let self = self else { return Observable.empty() }
+                return self.pushToWeather()
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
+
         navigationController.pushViewController(vc, animated: false)
 
         return Observable.never()
@@ -30,10 +38,8 @@ class MainCoordinator: Coordinator<Void> {
         return coordinate(to: childCoordinator)
     }
 
-//    func pushToWeather() {
-//        let childCoordinator = WeatherCoordinator(navigationController: navigationController)
-//        childCoordinators.append(childCoordinator)
-//        childCoordinator.parentCoordinator = self
-//        childCoordinator.start()
-//    }
+    private func pushToWeather() -> Observable<Void> {
+        let childCoordinator = WeatherCoordinator(navigationController: navigationController)
+        return coordinate(to: childCoordinator)
+    }
 }

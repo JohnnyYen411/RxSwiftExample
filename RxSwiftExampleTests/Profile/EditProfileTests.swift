@@ -18,7 +18,7 @@ class EditProfileTests: XCTestCase {
     private var viewModel: EditProfileViewModel!
     private var scheduler: TestScheduler!
     private var disposeBag: DisposeBag!
-    private var mocStorageServices: StorageServices!
+    private var mocStorageService: StorageService!
     private var mocContext: NSManagedObjectContext!
     private var mocContainer: NSPersistentContainer!
     private var profile: Profile!
@@ -29,9 +29,9 @@ class EditProfileTests: XCTestCase {
         disposeBag = DisposeBag()
         mocContainer = self.getMockContainer()
         mocContext = mocContainer.newBackgroundContext()
-        mocStorageServices = StorageServices(container: mocContainer, context: mocContext)
+        mocStorageService = StorageService(container: mocContainer, context: mocContext)
         profile = Profile(name: "Test Name", birthday: "Test Birthday")
-        let provider = ProfileProvider(mocStorageServices, profile)
+        let provider = ProfileProvider(mocStorageService, profile)
 
         viewModel = EditProfileViewModel(provider)
     }
@@ -77,7 +77,7 @@ class EditProfileTests: XCTestCase {
     func testSaveProfile() throws {
         let name = scheduler.createObserver(String.self)
         let birthday = scheduler.createObserver(String.self)
-        let mocServices = mocStorageServices!
+        let mocServices = mocStorageService!
         let profile = self.profile!
 
         viewModel.name

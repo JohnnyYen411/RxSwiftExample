@@ -12,13 +12,13 @@ import CoreData
 
 class ProfileListProvider {
     private var list: [ProfileProvider] = []
-    private let storageServices: StorageServices
+    private let storageService: StorageService
 
     //Outputs
     let providers = BehaviorSubject<[ProfileProvider]>(value: [])
 
-    init(_ storageServices: StorageServices) {
-        self.storageServices = storageServices
+    init(_ storageService: StorageService) {
+        self.storageService = storageService
     }
 
     deinit {
@@ -26,7 +26,7 @@ class ProfileListProvider {
     }
 
     func update() -> Observable<Void> {
-        let storServ = storageServices
+        let storServ = storageService
         return storServ.fetchAll()
             .map { [ProfileProvider]($0, storServ) }
             .map { [weak self] in
@@ -36,9 +36,9 @@ class ProfileListProvider {
     }
 
     func clearAll() -> Observable<Void> {
-        let storServ = storageServices
+        let storServ = storageService
 //        return storServ.deleteAll()
-        return Observable.error(StorageServices.Errors.deleteAll)
+        return Observable.error(StorageService.Errors.deleteAll)
             .flatMap { storServ.fetchAll() }
             .map { [ProfileProvider]($0, storServ) }
             .map { [weak self] in
@@ -50,7 +50,7 @@ class ProfileListProvider {
 
 extension Array where Element == ProfileProvider {
 
-    init(_ profiles: [Profile], _ storageServices: StorageServices) {
+    init(_ profiles: [Profile], _ storageServices: StorageService) {
         self = profiles.map{ ProfileProvider(storageServices, $0) }
     }
 }

@@ -17,9 +17,9 @@ class ProfileProvider {
     //Outputs
     let name = BehaviorSubject(value: "")
     let birthday = BehaviorSubject(value: "")
-    let storageServices: StorageServices
+    let storageServices: StorageService
 
-    init(_ storageServices: StorageServices, _ profile: Profile = Profile()) {
+    init(_ storageServices: StorageService, _ profile: Profile = Profile()) {
         self.profile = profile
         self.name.onNext(profile.name)
         self.birthday.onNext(profile.birthday)

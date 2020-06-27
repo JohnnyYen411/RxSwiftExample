@@ -10,10 +10,10 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class AddProfileViewController: UIViewController, Storyboarded {
+class AddProfileViewController: BaseViewController, Storyboarded {
 
     private var disposeBag = DisposeBag()
-    let viewModel = AddProfileViewModel(StorageServices())
+    let viewModel = AddProfileViewModel(StorageService())
 
     @IBOutlet weak var selectImageButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
@@ -51,9 +51,4 @@ class AddProfileViewController: UIViewController, Storyboarded {
             .disposed(by: disposeBag)
     }
 
-    func showError(message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
 }

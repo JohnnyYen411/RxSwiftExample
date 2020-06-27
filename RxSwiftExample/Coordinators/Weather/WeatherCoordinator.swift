@@ -16,7 +16,7 @@ class WeatherCoordinator: Coordinator<Void> {
         let didPop = navigationController.rx.willShow
             .filter { (viewController, _) -> Bool in viewController != vc }
             .filter { [weak self] (viewController, _) -> Bool in !(self?.navigationController.viewControllers.contains(vc) ?? false) }
-            .flatMap { _ in Observable<Void>.just(()) }
+            .map { _ in () }
 
         navigationController.pushViewController(vc, animated: true)
 

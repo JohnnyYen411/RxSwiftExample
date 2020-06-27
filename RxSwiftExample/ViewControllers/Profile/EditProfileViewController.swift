@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class EditProfileViewController: UIViewController, Storyboarded {
+class EditProfileViewController: BaseViewController, Storyboarded {
 
     private let disposeBag = DisposeBag()
     var viewModel: EditProfileViewModel!
@@ -58,11 +58,5 @@ class EditProfileViewController: UIViewController, Storyboarded {
                 self?.showError(message: $0)
             })
             .disposed(by: disposeBag)
-    }
-
-    func showError(message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }

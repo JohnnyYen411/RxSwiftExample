@@ -10,7 +10,7 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class ProfileViewController: UIViewController, Storyboarded {
+class ProfileViewController: BaseViewController, Storyboarded {
 
     private var disposeBag = DisposeBag()
     var viewModel: ProfileViewModel!

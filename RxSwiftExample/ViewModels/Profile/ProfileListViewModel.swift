@@ -27,7 +27,7 @@ class ProfileListViewModel {
     let didUpdateList: Observable<Void>
     let didClear: Observable<Void>
 
-    init(_ storageServices: StorageServices) {
+    init(_ storageServices: StorageService) {
         let pvd = ProfileListProvider(storageServices)
         provider = pvd
         profileList = provider.providers
@@ -38,7 +38,7 @@ class ProfileListViewModel {
             .map {
                 $0.count > 0 }
 
-        let fetchResult = Observable.merge(Observable.just(()), createProfile)
+        let fetchResult = Observable.merge(.just(()), createProfile)
             .flatMap { pvd.update().materialize() }
             .share()
 
@@ -53,12 +53,6 @@ class ProfileListViewModel {
             .observeOn(MainScheduler.instance)
 
         showError = Observable.merge(fetchResult.errors(), clearResult.errors())
-            .map { error in
-                switch error {
-                case StorageServices.Errors.deleteAll: return "Unable to clear data."
-                case StorageServices.Errors.fetchAll: return "Unable to load data."
-                default: return "Unknown error."
-                }
-            }
+            .map { $0.localizedDescription }
     }
 }

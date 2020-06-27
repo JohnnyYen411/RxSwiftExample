@@ -28,7 +28,7 @@ class ProfileViewModel {
 
         toEditProfile = tapEdit
             .flatMap({ () -> Observable<ProfileProvider> in
-                return Observable.just(provider)
+                return .just(provider)
             })
     }
 }

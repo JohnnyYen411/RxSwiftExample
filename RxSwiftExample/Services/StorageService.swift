@@ -1,5 +1,5 @@
 //
-//  CoreDataServices.swift
+//  CoreDataService.swift
 //  RxSwiftExample
 //
 //  Created by Johnny Yen on 2020/6/19.
@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 import CoreData
 
-struct StorageServices {
+struct StorageService {
 
     enum Errors: Error {
         case fetchAll
@@ -149,6 +149,20 @@ struct StorageServices {
             }
 
             return Disposables.create()
+        }
+    }
+}
+
+extension StorageService.Errors: LocalizedError {
+    var localizedDescription: String {
+        switch self {
+        case .fetchAll: return "Unable to load data."
+        case .deleteAll: return "Unable to clear data."
+
+        case .insert(_): return "Unable to add profile"
+        case .entityNotFound(_): return "Entity not found"
+        case .fetch(_): return "Unable to fetch data"
+        case .write(_): return "Unable to write data"
         }
     }
 }

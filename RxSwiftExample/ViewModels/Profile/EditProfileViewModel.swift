@@ -43,8 +43,8 @@ class EditProfileViewModel {
         showError = saveProfile.errors()
             .map { error in
                 switch error {
-                case StorageServices.Errors.entityNotFound(_): return "Entity not found"
-                case StorageServices.Errors.write(_): return "Unable to write data"
+                case StorageService.Errors.entityNotFound(_): return "Entity not found"
+                case StorageService.Errors.write(_): return "Unable to write data"
                 default: return "Unknown error."
                 }
             }

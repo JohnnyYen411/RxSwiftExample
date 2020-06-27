@@ -16,15 +16,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="1wM-rD-T8a">
-                                <rect key="frame" x="135" y="408" width="144" height="80"/>
+                                <rect key="frame" x="178" y="408" width="58" height="80"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KyI-fZ-e8K">
-                                        <rect key="frame" x="50" y="0.0" width="44" height="30"/>
+                                        <rect key="frame" x="7" y="0.0" width="44" height="30"/>
                                         <state key="normal" title="Profile"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5s-Qm-5PJ">
-                                        <rect key="frame" x="0.0" y="50" width="144" height="30"/>
-                                        <state key="normal" title="Weather__longer text"/>
+                                        <rect key="frame" x="0.0" y="50" width="58" height="30"/>
+                                        <state key="normal" title="Weather"/>
                                     </button>
                                 </subviews>
                             </stackView>

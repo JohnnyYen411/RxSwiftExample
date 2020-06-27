@@ -19,7 +19,7 @@ class ProfileListTests: XCTestCase {
     private var viewModel: ProfileListViewModel!
     private var scheduler: TestScheduler!
     private var disposeBag: DisposeBag!
-    private var mockStorageServices: StorageServices!
+    private var mockStorageService: StorageService!
     private var mockContainer: NSPersistentContainer!
     private var mockContext: NSManagedObjectContext!
 
@@ -27,8 +27,8 @@ class ProfileListTests: XCTestCase {
         try super.setUpWithError()
         mockContainer = getMockContainer()
         mockContext = mockContainer.newBackgroundContext()
-        mockStorageServices = StorageServices(container: mockContainer, context: mockContext)
-        viewModel = ProfileListViewModel(mockStorageServices)
+        mockStorageService = StorageService(container: mockContainer, context: mockContext)
+        viewModel = ProfileListViewModel(mockStorageService)
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
@@ -37,7 +37,7 @@ class ProfileListTests: XCTestCase {
         viewModel = nil
         scheduler = nil
         disposeBag = nil
-        mockStorageServices = nil
+        mockStorageService = nil
         mockContext = nil
         mockContainer = nil
         try super.tearDownWithError()
@@ -82,7 +82,7 @@ class ProfileListTests: XCTestCase {
             .bind(to: didFetchList)
             .disposed(by: disposeBag)
 
-        let mockServices = mockStorageServices!
+        let mockServices = mockStorageService!
 
         scheduler.createColdObservable([.next(1, ())])
             .flatMap { mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
@@ -155,7 +155,7 @@ class ProfileListTests: XCTestCase {
             .disposed(by: disposeBag)
 
         let newProfile = Profile(name: "Test Name", birthday: "Test Birthday")
-        let newProvider = ProfileProvider(mockStorageServices!, newProfile)
+        let newProvider = ProfileProvider(mockStorageService!, newProfile)
 
         scheduler.createColdObservable([.next(1, newProvider)])
             .bind(to: viewModel.toProfile)

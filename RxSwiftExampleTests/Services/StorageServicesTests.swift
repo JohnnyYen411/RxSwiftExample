@@ -1,5 +1,5 @@
 //
-//  StorageServicesTests.swift
+//  StorageServiceTests.swift
 //  RxSwiftExampleTests
 //
 //  Created by Johnny Yen on 2020/6/20.
@@ -13,11 +13,11 @@ import CoreData
 
 @testable import RxSwiftExample
 
-class StorageServicesTests: XCTestCase {
+class StorageServiceTests: XCTestCase {
 
     private var disposeBag: DisposeBag!
     private var scheduler: TestScheduler!
-    private var mockStorageServices: StorageServices!
+    private var mockStorageService: StorageService!
     private var mockContext: NSManagedObjectContext!
     private var mockContainer: NSPersistentContainer!
 
@@ -27,12 +27,12 @@ class StorageServicesTests: XCTestCase {
         disposeBag = DisposeBag()
         mockContainer = getMockContainer()
         mockContext = mockContainer.newBackgroundContext()
-        mockStorageServices = StorageServices(container: mockContainer, context: mockContext)
+        mockStorageService = StorageService(container: mockContainer, context: mockContext)
 
     }
 
     override func tearDownWithError() throws {
-        mockStorageServices = nil
+        mockStorageService = nil
         mockContext = nil
         mockContainer = nil
         scheduler = nil
@@ -42,7 +42,7 @@ class StorageServicesTests: XCTestCase {
 
     func testFetchAll() throws {
         let inserted = scheduler.createObserver(Profile.self)
-        let mockServices = mockStorageServices!
+        let mockServices = mockStorageService!
 
         let fetchExpectation = expectation(description: "")
         scheduler.createColdObservable([.next(4, ())])
@@ -71,7 +71,7 @@ class StorageServicesTests: XCTestCase {
     }
 
     func testInsertAndFetch() throws {
-        let mockServices = mockStorageServices!
+        let mockServices = mockStorageService!
 
         let profile = Profile(name: "Test Name", birthday: "Test Birthday")
 
@@ -94,7 +94,7 @@ class StorageServicesTests: XCTestCase {
     }
 
     func testUpdate() throws {
-        let mockServices = mockStorageServices!
+        let mockServices = mockStorageService!
 
         let profile = Profile(name: "Original Name", birthday: "Original Birthday")
 

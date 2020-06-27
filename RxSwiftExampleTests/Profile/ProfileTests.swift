@@ -19,7 +19,7 @@ class ProfileTests: XCTestCase {
     private var viewModel: ProfileViewModel!
     private var disposeBag: DisposeBag!
     private var scheduler: TestScheduler!
-    private var mockStorageServices: StorageServices!
+    private var mockStorageService: StorageService!
 
     lazy var mockContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "DataModel")
@@ -45,9 +45,9 @@ class ProfileTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockStorageServices = StorageServices(container: mockContainer, context: mockContext)
+        mockStorageService = StorageService(container: mockContainer, context: mockContext)
         let profile = Profile(name: "Test Name", birthday: "Test Birthday")
-        let provider = ProfileProvider(mockStorageServices!, profile)
+        let provider = ProfileProvider(mockStorageService!, profile)
         viewModel = ProfileViewModel(provider)
         disposeBag = DisposeBag()
         scheduler = TestScheduler(initialClock: 0)
@@ -57,7 +57,7 @@ class ProfileTests: XCTestCase {
         viewModel = nil
         disposeBag = nil
         scheduler = nil
-        mockStorageServices = nil
+        mockStorageService = nil
         try super.tearDownWithError()
     }
 

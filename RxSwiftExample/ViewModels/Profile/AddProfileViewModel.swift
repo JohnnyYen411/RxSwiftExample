@@ -24,7 +24,7 @@ class AddProfileViewModel {
     let didCreateProfile: Observable<Profile>
     let showError: Observable<String>
 
-    init(_ storageServices: StorageServices) {
+    init(_ storageServices: StorageService) {
         let pvd = ProfileProvider(storageServices)
         provider = pvd
         let inputs = Observable.combineLatest(name, birthday)
@@ -41,13 +41,7 @@ class AddProfileViewModel {
         didCreateProfile = createProfile.elements()
         
         showError = createProfile.errors()
-            .map { error in
-                switch error {
-                case StorageServices.Errors.entityNotFound(_): return "Entity not found"
-                case StorageServices.Errors.insert(_): return "Unable to add profile"
-                default: return "Unknown error."
-                }
-        }
+            .map { $0.localizedDescription }
 
     }
 }

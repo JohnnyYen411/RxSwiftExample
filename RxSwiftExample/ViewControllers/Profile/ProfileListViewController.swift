@@ -10,10 +10,10 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class ProfileListViewController: UIViewController, Storyboarded {
+class ProfileListViewController: BaseViewController, Storyboarded {
 
     private var disposeBag = DisposeBag()
-    let viewModel = ProfileListViewModel(StorageServices())
+    let viewModel = ProfileListViewModel(StorageService())
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addProfileBarButton: UIBarButtonItem!
@@ -70,11 +70,6 @@ class ProfileListViewController: UIViewController, Storyboarded {
             .disposed(by: disposeBag)
     }
 
-    func showError(message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
 }
 
 class ProfileListTableViewCell: UITableViewCell {
