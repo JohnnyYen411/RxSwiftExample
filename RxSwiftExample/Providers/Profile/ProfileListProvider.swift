@@ -47,10 +47,3 @@ class ProfileListProvider {
             }
     }
 }
-
-extension Array where Element == ProfileProvider {
-
-    init(_ profiles: [Profile], _ storageServices: StorageService) {
-        self = profiles.map{ ProfileProvider(storageServices, $0) }
-    }
-}

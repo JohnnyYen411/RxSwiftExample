@@ -8,27 +8,13 @@
 
 import Foundation
 
-//"{\"coord\":{\"lon\":139,\"lat\":35},
-//\"weather\":[{\"id\":500,\"main\":\"Rain\",\"description\":\"light rain\",\"icon\":\"10n\"}],
-//\"base\":\"stations\",
-//\"main\":{\"temp\":296.48,\"feels_like\":296.62,\"temp_min\":296.48,\"temp_max\":296.48,\"pressure\":1002,\"humidity\":65},
-//\"wind\":{\"speed\":2.85,\"deg\":254},
-//\"rain\":{\"1h\":0.88},
-//\"clouds\":{\"all\":100},
-//\"dt\":1593269522,
-//\"sys\":{\"type\":3,\"id\":2019346,\"country\":\"JP\",\"sunrise\":1593199921,\"sunset\":1593252112},
-//\"timezone\":32400,
-//\"id\":1851632,
-//\"name\":\"Shuzenji\",
-//\"cod\":200}"
-
 struct WeatherInfo: Decodable {
     let coordinate: Coordinate
     let weather: [Weather]
     let base: String
     let main: Main
     let wind: Wind
-//    let rain: Rain
+    let rain: Rain?
     let clouds: Clouds
     let dt: TimeInterval
     let sys: Sys
@@ -43,7 +29,7 @@ struct WeatherInfo: Decodable {
         case base
         case main
         case wind
-//        case rain
+        case rain
         case clouds
         case dt
         case sys
@@ -138,8 +124,8 @@ struct WeatherInfo: Decodable {
     }
 
     struct Sys:Decodable {
-        let type: Int
-        let id: Int
+        let type: Int?
+        let id: Int?
         let country: String
         let sunrise: TimeInterval
         let sunset: TimeInterval

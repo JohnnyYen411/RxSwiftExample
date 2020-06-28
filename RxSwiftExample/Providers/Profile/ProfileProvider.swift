@@ -60,3 +60,10 @@ class ProfileProvider {
         return inputs.map { $0.count > 0 && $1.count > 0 }
     }
 }
+
+extension Array where Element == ProfileProvider {
+
+    init(_ profiles: [Profile], _ storageServices: StorageService) {
+        self = profiles.map{ ProfileProvider(storageServices, $0) }
+    }
+}

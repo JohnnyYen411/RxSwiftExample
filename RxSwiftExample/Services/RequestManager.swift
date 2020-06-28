@@ -105,7 +105,9 @@ class RequestManager {
 
                 let resp = Response(response)
                 let results = Results(data: data, response: resp, error: error)
-                completion(results)
+                DispatchQueue.main.async {
+                    completion(results)
+                }
             }
 
             task.resume()

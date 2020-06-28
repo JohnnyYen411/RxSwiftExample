@@ -11,11 +11,12 @@ import CoreData
 
 struct Profile: Equatable {
 
-    private var uuid: String = UUID().uuidString
+    private var uuid: String
     var name: String
     var birthday: String
 
     init() {
+        self.uuid = UUID().uuidString
         self.name = ""
         self.birthday = ""
     }

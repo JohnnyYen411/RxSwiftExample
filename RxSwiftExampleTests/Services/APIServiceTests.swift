@@ -30,7 +30,7 @@ class APIServiceTests: XCTestCase {
 
     func testGetCurrentWeather() throws {
         let currentWeatherExpectation = expectation(description: "current weather response")
-        apiService.getCurrentWeather(latitude: 35, longitude: 139)
+        apiService.getCurrentWeather(latitude: 35, longitude: 121)
             .subscribe(onNext: { weatherInfo in
                 XCTAssert(weatherInfo.name.count != 0)
                 currentWeatherExpectation.fulfill()

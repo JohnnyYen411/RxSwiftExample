@@ -28,8 +28,8 @@ struct APIService {
                 do {
                     if let data = result.data,
                        let weatherInfo = try decoder.decode(WeatherInfo?.self, from: data) {
-                        let dataStr = String(data: data, encoding: .utf8)
-                        print("data: \(String(describing: dataStr))")
+//                        let dataStr = String(data: data, encoding: .utf8)
+//                        print("data: \(String(describing: dataStr))")
                         observer.onNext(weatherInfo)
                     }
                 } catch {
