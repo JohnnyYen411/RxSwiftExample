@@ -119,9 +119,10 @@ class EditProfileTests: XCTestCase {
 
         scheduler.start()
 
+        wait(for: [fetchExpectation], timeout: 2)
         XCTAssertEqual(name.events, [.next(0, "Test Name"), .next(2, "Modified Name")])
         XCTAssertEqual(birthday.events, [.next(0, "Test Birthday"), .next(2, "Modified Birthday")])
-        wait(for: [fetchExpectation], timeout: 2)
+
     }
 
 //    func testPerformanceExample() throws {

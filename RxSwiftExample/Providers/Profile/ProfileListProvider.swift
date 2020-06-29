@@ -37,8 +37,7 @@ class ProfileListProvider {
 
     func clearAll() -> Observable<Void> {
         let storServ = storageService
-//        return storServ.deleteAll()
-        return Observable.error(StorageService.Errors.deleteAll)
+        return storServ.deleteAll()
             .flatMap { storServ.fetchAll() }
             .map { [ProfileProvider]($0, storServ) }
             .map { [weak self] in

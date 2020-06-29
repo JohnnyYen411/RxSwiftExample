@@ -53,6 +53,7 @@ struct StorageService {
 
             return Disposables.create()
         }
+        .observeOn(MainScheduler.instance)
     }
 
     func deleteAll() -> Observable<Void> {
@@ -73,6 +74,7 @@ struct StorageService {
 
             return Disposables.create()
         }
+        .observeOn(MainScheduler.instance)
     }
 
     func insert(profile: Profile) -> Observable<Profile> {
@@ -97,6 +99,7 @@ struct StorageService {
 
             return Disposables.create()
         }
+        .observeOn(MainScheduler.instance)
     }
 
     func write(uuid: String, name: String, birthday: String) -> Observable<String> {
@@ -127,6 +130,7 @@ struct StorageService {
 
             return Disposables.create()
         }
+        .observeOn(MainScheduler.instance)
     }
 
     func fetch(uuid: String) -> Observable<Profile> {
@@ -150,6 +154,7 @@ struct StorageService {
 
             return Disposables.create()
         }
+        .observeOn(MainScheduler.instance)
     }
 }
 

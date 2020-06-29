@@ -66,8 +66,8 @@ class StorageServiceTests: XCTestCase {
 
         scheduler.start()
 
-        XCTAssertEqual(inserted.events.count, 3)
         wait(for: [fetchExpectation], timeout: 2)
+        XCTAssertEqual(inserted.events.count, 3)
     }
 
     func testInsertAndFetch() throws {

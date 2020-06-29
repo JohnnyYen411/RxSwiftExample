@@ -31,7 +31,6 @@ class AddProfileViewModel {
             .share(replay: 1)
 
         isValid = provider.isValid(inputs)
-            .observeOn(MainScheduler.instance)
 
         let createProfile = saveTap.withLatestFrom(inputs)
             .map { Profile(name: $0, birthday: $1) }

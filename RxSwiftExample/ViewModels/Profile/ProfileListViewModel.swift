@@ -31,10 +31,8 @@ class ProfileListViewModel {
         let pvd = ProfileListProvider(storageServices)
         provider = pvd
         profileList = provider.providers
-            .observeOn(MainScheduler.instance)
 
         hasItems = profileList
-            .observeOn(MainScheduler.instance)
             .map {
                 $0.count > 0 }
 
@@ -47,10 +45,8 @@ class ProfileListViewModel {
             .share()
 
         didUpdateList = fetchResult.elements()
-            .observeOn(MainScheduler.instance)
 
         didClear = clearResult.elements()
-            .observeOn(MainScheduler.instance)
 
         showError = Observable.merge(fetchResult.errors(), clearResult.errors())
             .map { $0.localizedDescription }
