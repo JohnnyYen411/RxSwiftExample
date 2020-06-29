@@ -54,7 +54,6 @@ class ProfileCoordinator: Coordinator<Void> {
         let vc = EditProfileViewController.instantiate(from: .profile)
         vc.viewModel = EditProfileViewModel(provider)
         vc.viewModel.didSave
-            .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] in self?.navigationController.popViewController(animated: true) })
             .disposed(by: disposeBag)
         navigationController.pushViewController(vc, animated: true)

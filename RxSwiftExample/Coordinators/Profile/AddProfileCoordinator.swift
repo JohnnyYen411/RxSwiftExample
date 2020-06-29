@@ -20,8 +20,7 @@ class AddProfileCoordinator: Coordinator<AddProfileCoordinationResult> {
         let vc = AddProfileViewController.instantiate(from: .profile)
 
         let didCreate = vc.viewModel.didCreateProfile
-            .map { _ in
-                AddProfileCoordinationResult.didCreate }
+            .map { _ in AddProfileCoordinationResult.didCreate }
 
         guard let presentationController = navigationController.presentationController else { return Observable.empty() }
 
