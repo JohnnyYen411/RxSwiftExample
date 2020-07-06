@@ -20,37 +20,19 @@ class ProfileTests: XCTestCase {
     private var disposeBag: DisposeBag!
     private var scheduler: TestScheduler!
     private var mockStorageService: StorageService!
-
-    lazy var mockContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "DataModel")
-        let description = NSPersistentStoreDescription()
-        description.type = NSInMemoryStoreType
-
-        container.persistentStoreDescriptions = [description]
-        container.loadPersistentStores { (description, error) in
-            // Check if the data store is in memory
-            precondition( description.type == NSInMemoryStoreType )
-
-            // Check if creating container wrong
-            if let error = error {
-                fatalError("Create an in-mem coordinator failed \(error)")
-            }
-        }
-        return container
-    }()
-
-    lazy var mockContext: NSManagedObjectContext = {
-        self.mockContainer.newBackgroundContext()
-    }()
+    private var mockContainer: NSPersistentContainer!
+    private var mockContext: NSManagedObjectContext!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        mockContainer = getMockContainer()
+        mockContext = mockContainer.newBackgroundContext()
+        scheduler = TestScheduler(initialClock: 0)
         mockStorageService = StorageService(container: mockContainer, context: mockContext)
         let profile = Profile(name: "Test Name", birthday: "Test Birthday")
         let provider = ProfileProvider(mockStorageService!, profile)
         viewModel = ProfileViewModel(provider)
         disposeBag = DisposeBag()
-        scheduler = TestScheduler(initialClock: 0)
     }
 
     override func tearDownWithError() throws {
@@ -58,6 +40,8 @@ class ProfileTests: XCTestCase {
         disposeBag = nil
         scheduler = nil
         mockStorageService = nil
+        mockContext = nil
+        mockContainer = nil
         try super.tearDownWithError()
     }
 
@@ -70,7 +54,7 @@ class ProfileTests: XCTestCase {
         let toEditName = scheduler.createObserver(String.self)
         let toEditBirthday = scheduler.createObserver(String.self)
 
-        let toEdit = viewModel.toEditProfile.share(replay: 1)
+        let toEdit = viewModel.toEditProfile.share()
 
         toEdit
             .flatMap { $0.name }
@@ -99,4 +83,21 @@ class ProfileTests: XCTestCase {
 //        }
 //    }
 
+    private func getMockContainer() -> NSPersistentContainer{
+        let container = NSPersistentContainer(name: "DataModel")
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+
+        container.persistentStoreDescriptions = [description]
+        container.loadPersistentStores { (description, error) in
+            // Check if the data store is in memory
+            precondition( description.type == NSInMemoryStoreType )
+
+            // Check if creating container wrong
+            if let error = error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        return container
+    }
 }

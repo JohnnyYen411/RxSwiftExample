@@ -19,8 +19,7 @@ class ProfileCoordinator: Coordinator<Void> {
                 guard let self = self else { return .empty() }
                 return self.presentAddProfileViewController()
             }
-            .filter {
-                $0 }
+            .filter { $0 }
             .map { _ in () }
             .observeOn(MainScheduler.instance)
             .bind(to: vc.viewModel.createProfile)

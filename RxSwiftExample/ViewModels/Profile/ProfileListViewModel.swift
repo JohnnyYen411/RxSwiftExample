@@ -27,14 +27,13 @@ class ProfileListViewModel {
     let didUpdateList: Observable<Void>
     let didClear: Observable<Void>
 
-    init(_ storageServices: StorageService) {
-        let pvd = ProfileListProvider(storageServices)
+    init(_ storageService: StorageService = StorageService()) {
+        let pvd = ProfileListProvider(storageService)
         provider = pvd
         profileList = provider.providers
 
         hasItems = profileList
-            .map {
-                $0.count > 0 }
+            .map { $0.count > 0 }
 
         let fetchResult = Observable.merge(.just(()), createProfile)
             .flatMap { pvd.update().materialize() }

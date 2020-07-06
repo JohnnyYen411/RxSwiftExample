@@ -10,8 +10,10 @@ import Foundation
 import RxSwift
 import CoreLocation
 
-class CurrentWeatherViewModel {
-    private let locationServices: LocationService
+class CurrentWeatherViewModel<GenericLocationService: LocationServiceProtocol, GenericAPIService: APIServiceProtocol> {
+
+    private var locationService: GenericLocationService
+    private var apiService: GenericAPIService
 
     //Inputs
     let refreshLocation = PublishSubject<Void>()
@@ -26,45 +28,56 @@ class CurrentWeatherViewModel {
 
     let showError: Observable<String>
 
-    init() {
-        let services = LocationService()
-        locationServices = services
+    init(locationService: GenericLocationService, apiService: GenericAPIService) {
+        self.locationService = locationService
+        self.apiService = apiService
 
-        let refresh = refreshLocation
-            .share(replay: 1)
-
-        let placemark = Observable.merge(.just(()), refresh)
-            .flatMap { services.getCurrentPlacemark().materialize() }
+        let placemark = Observable.merge(.just(()), refreshLocation)
+            .flatMap { locationService.getCurrentPlacemark().materialize() }
             .share()
 
-        let placemarkElements = placemark.elements().share(replay: 1)
+        let placemarkElements = placemark.elements()
+            .throttle(.seconds(2), latest: false, scheduler: MainScheduler.instance)
+            .share()
+
         currentLocation = placemarkElements
-            .filter { $0.locality != nil }
-            .map { $0.locality! }
+            .map { $0.locality }
+            .unwrap()
             .map { "\($0)" }
 
-        let weatherInfo = placemarkElements
+        let weatherInfoResult = placemarkElements
             .map { $0.location }
-            .filter { $0 != nil }
-            .map { $0! }
-            .flatMap { APIService().getCurrentWeather(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude) }
-            .share(replay: 1)
+            .unwrap()
+            .flatMap { apiService.getCurrentWeather(latitude: $0.coordinate.latitude,
+                                                    longitude: $0.coordinate.longitude).materialize() }
+            .share()
+
+        let weatherInfo = weatherInfoResult.elements().share()
 
         currentTemp = weatherInfo
             .map { "\($0.main.temp_disp)" }
+
         weatherDesc = weatherInfo
             .map { $0.weather.first }
-            .filter { $0 != nil }
-            .map { $0! }
+            .unwrap()
             .map { "\($0.desc)" }
+
         tempMin = weatherInfo
             .map { "\($0.main.tempMin_disp)" }
+
         tempMax = weatherInfo
             .map { "\($0.main.tempMax_disp)" }
+        
         tempFeelsLike = weatherInfo
             .map { "\($0.main.feelsLike_disp)" }
 
-        showError = placemark.errors()
+        showError = Observable.merge(placemark.errors(), weatherInfoResult.errors())
             .map { $0.localizedDescription }
+    }
+}
+
+extension CurrentWeatherViewModel where GenericLocationService == LocationService, GenericAPIService == APIService {
+    convenience init() {
+        self.init(locationService: LocationService(), apiService: APIService())
     }
 }

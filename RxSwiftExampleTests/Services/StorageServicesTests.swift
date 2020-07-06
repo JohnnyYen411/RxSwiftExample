@@ -48,7 +48,7 @@ class StorageServiceTests: XCTestCase {
         scheduler.createColdObservable([.next(4, ())])
             .flatMap { mockServices.fetchAll() }
             .subscribe(onNext: { profiles in
-                XCTAssert(profiles.count == 3)
+                XCTAssertEqual(profiles.count, 3)
                 fetchExpectation.fulfill()
             })
             .disposed(by: disposeBag)
@@ -60,7 +60,7 @@ class StorageServiceTests: XCTestCase {
             .subscribe(onNext: {
                 inserted.onNext($0)
             }, onError: { error in
-                XCTAssertNotNil(error)
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 
@@ -80,11 +80,11 @@ class StorageServiceTests: XCTestCase {
             .flatMap { mockServices.insert(profile: profile) }
             .flatMap { _ in mockServices.fetch(uuid: profile.getUuid()) }
             .subscribe(onNext: { profile in
-                XCTAssert(profile.name == "Test Name")
-                XCTAssert(profile.birthday == "Test Birthday")
+                XCTAssertEqual(profile.name, "Test Name")
+                XCTAssertEqual(profile.birthday, "Test Birthday")
                 fetchExpectation.fulfill()
             }, onError: { error in
-                XCTAssertNil(error)
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 
@@ -104,11 +104,11 @@ class StorageServiceTests: XCTestCase {
             .flatMap { _ in mockServices.write(uuid: profile.getUuid(), name: "Modified Name", birthday: "Modified Birthday") }
             .flatMap { _ in mockServices.fetch(uuid: profile.getUuid()) }
             .subscribe(onNext: { profile in
-                XCTAssert(profile.name == "Modified Name")
-                XCTAssert(profile.birthday == "Modified Birthday")
+                XCTAssertEqual(profile.name, "Modified Name")
+                XCTAssertEqual(profile.birthday, "Modified Birthday")
                 fetchExpectation.fulfill()
             }, onError: { error in
-                XCTAssertNil(error)
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 
@@ -129,7 +129,7 @@ class StorageServiceTests: XCTestCase {
 
             // Check if creating container wrong
             if let error = error {
-                fatalError("Create an in-mem coordinator failed \(error)")
+                XCTFail("Create an in-mem coordinator failed \(error)")
             }
         }
         return container

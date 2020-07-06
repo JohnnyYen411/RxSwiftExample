@@ -24,11 +24,11 @@ class AddProfileViewModel {
     let didCreateProfile: Observable<Profile>
     let showError: Observable<String>
 
-    init(_ storageServices: StorageService) {
-        let pvd = ProfileProvider(storageServices)
+    init(_ storageService: StorageService = StorageService()) {
+        let pvd = ProfileProvider(storageService)
         provider = pvd
         let inputs = Observable.combineLatest(name, birthday)
-            .share(replay: 1)
+            .share()
 
         isValid = provider.isValid(inputs)
 

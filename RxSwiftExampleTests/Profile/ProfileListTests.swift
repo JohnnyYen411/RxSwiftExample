@@ -25,11 +25,11 @@ class ProfileListTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        scheduler = TestScheduler(initialClock: 0)
         mockContainer = getMockContainer()
         mockContext = mockContainer.newBackgroundContext()
         mockStorageService = StorageService(container: mockContainer, context: mockContext)
         viewModel = ProfileListViewModel(mockStorageService)
-        scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
 
@@ -66,38 +66,45 @@ class ProfileListTests: XCTestCase {
 
     
     func testDidAddProfile() throws {
-        let listCount = scheduler.createObserver(Int.self)
+        let latestName = scheduler.createObserver(String.self)
+        let latestBirthday = scheduler.createObserver(String.self)
         let didFetchList = scheduler.createObserver(Void.self)
 
+        let lastProvider = viewModel.profileList
+            .map { $0.last }
+            .unwrap()
+            .share()
+
         let createdExpectation = expectation(description: "profile created")
-        viewModel.profileList
-            .map { $0.count }
-            .subscribe(onNext: {
-                if $0 > 0 { createdExpectation.fulfill() }
-                listCount.onNext($0)
-            })
+        lastProvider
+            .subscribe(onNext: { _ in createdExpectation.fulfill() })
+            .disposed(by: disposeBag)
+
+        lastProvider
+            .flatMap { $0.name }
+            .bind(to: latestName)
+            .disposed(by: disposeBag)
+
+        lastProvider
+            .flatMap { $0.birthday }
+            .bind(to: latestBirthday)
             .disposed(by: disposeBag)
 
         viewModel.didUpdateList
             .bind(to: didFetchList)
             .disposed(by: disposeBag)
 
-        let mockServices = mockStorageService!
-
-        scheduler.createColdObservable([.next(1, ())])
-            .flatMap { mockServices.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday")) }
-            .map { _ in () }
-            .subscribe(onNext: { [weak self] in
-                self?.viewModel.createProfile.onNext($0)
-            }, onError: { error in
-                XCTAssertNil(error)
+        mockStorageService.insert(profile: Profile(name: "Test Name", birthday: "Test Birthday"))
+            .subscribe(onNext: { [weak self] _ in
+                self?.viewModel.createProfile.onNext(())
+                }, onError: { error in
+                    XCTAssertNil(error)
             })
             .disposed(by: disposeBag)
 
-        scheduler.start()
-
         wait(for: [createdExpectation], timeout: 2)
-        XCTAssertEqual(listCount.events.last, .next(1, 1))
+        XCTAssertEqual(latestName.events.last?.value.element, "Test Name")
+        XCTAssertEqual(latestBirthday.events.last?.value.element, "Test Birthday")
         XCTAssertEqual(didFetchList.events.count, 2)
     }
 
@@ -143,7 +150,7 @@ class ProfileListTests: XCTestCase {
         let providerName = scheduler.createObserver(String.self)
         let providerBirthday = scheduler.createObserver(String.self)
 
-        let selected = viewModel.toProfile.share(replay: 1)
+        let selected = viewModel.toProfile.share()
         selected
             .flatMap { $0.name }
             .bind(to: providerName)
@@ -186,7 +193,7 @@ class ProfileListTests: XCTestCase {
 
             // Check if creating container wrong
             if let error = error {
-                fatalError("Create an in-mem coordinator failed \(error)")
+                XCTFail(error.localizedDescription)
             }
         }
         return container

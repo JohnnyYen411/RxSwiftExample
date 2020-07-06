@@ -9,9 +9,20 @@
 import Foundation
 import RxSwift
 
-struct APIService {
+protocol APIServiceProtocol {
+    func getCurrentWeather(latitude: Double, longitude: Double) -> Observable<WeatherInfo>
+}
 
-    private let apiKey = "OpenWeatherMap API key"
+struct APIService: APIServiceProtocol {
+
+    private var apiKey: String {
+        if let path = Bundle.main.path(forResource: "APIKeys", ofType: "plist"),
+            let keys = NSDictionary(contentsOfFile: path) as? [String: String],
+            let key = keys["OpenWeatherMapAPIKey"] {
+            return key
+        }
+        fatalError("OpenWeatherMap API Key no provided, get an API key on 'https://openweathermap.org'")
+    }
 
     func getCurrentWeather(latitude: Double, longitude: Double) -> Observable<WeatherInfo> {
         return Observable.create { observer -> Disposable in
@@ -39,5 +50,6 @@ struct APIService {
 
             return Disposables.create()
         }
+        .debug("api get weather")
     }
 }
