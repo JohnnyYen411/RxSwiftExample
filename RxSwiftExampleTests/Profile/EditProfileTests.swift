@@ -27,12 +27,11 @@ class EditProfileTests: XCTestCase {
         try super.setUpWithError()
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        mocContainer = self.getMockContainer()
+        mocContainer = getMockContainer()
         mocContext = mocContainer.newBackgroundContext()
         mocStorageService = StorageService(container: mocContainer, context: mocContext)
         profile = Profile(name: "Test Name", birthday: "Test Birthday")
         let provider = ProfileProvider(mocStorageService, profile)
-
         viewModel = EditProfileViewModel(provider)
     }
 
@@ -92,11 +91,11 @@ class EditProfileTests: XCTestCase {
         viewModel.didSave
             .flatMap { mocServices.fetch(uuid: profile.getUuid()) }
             .subscribe(onNext: {
-                XCTAssert($0.name == "Modified Name")
-                XCTAssert($0.birthday == "Modified Birthday")
+                XCTAssertEqual($0.name, "Modified Name")
+                XCTAssertEqual($0.birthday, "Modified Birthday")
                 fetchExpectation.fulfill()
             }, onError: { error in
-                XCTAssertNil(error)
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 
@@ -144,7 +143,7 @@ class EditProfileTests: XCTestCase {
 
             // Check if creating container wrong
             if let error = error {
-                fatalError("Create an in-mem coordinator failed \(error)")
+                XCTFail(error.localizedDescription)
             }
         }
         return container

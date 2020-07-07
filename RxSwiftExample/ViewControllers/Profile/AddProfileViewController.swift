@@ -13,7 +13,7 @@ import RxCocoa
 class AddProfileViewController: BaseViewController, Storyboarded {
 
     private var disposeBag = DisposeBag()
-    let viewModel = AddProfileViewModel(StorageService())
+    let viewModel = AddProfileViewModel()
 
     @IBOutlet weak var selectImageButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!

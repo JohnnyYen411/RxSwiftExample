@@ -31,7 +31,7 @@ class EditProfileViewModel {
         birthday = provider.birthday
 
         let inputs = Observable.combineLatest(inputName, inputBirthday)
-            .share(replay: 1)
+            .share()
 
         isModified = provider.isModified(inputs)
 
@@ -41,12 +41,6 @@ class EditProfileViewModel {
 
         didSave = saveProfile.elements()
         showError = saveProfile.errors()
-            .map { error in
-                switch error {
-                case StorageService.Errors.entityNotFound(_): return "Entity not found"
-                case StorageService.Errors.write(_): return "Unable to write data"
-                default: return "Unknown error."
-                }
-            }
+            .map { "\($0.localizedDescription)" }
     }
 }

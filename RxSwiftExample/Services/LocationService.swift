@@ -11,7 +11,11 @@ import CoreLocation
 import RxCoreLocation
 import RxSwift
 
-struct LocationService {
+protocol LocationServiceProtocol {
+    func getCurrentPlacemark() -> Observable<Placemark>
+}
+
+struct LocationService: LocationServiceProtocol {
     enum Errors: Error {
         case locationManager(Error)
         case authorization
@@ -25,20 +29,21 @@ struct LocationService {
         locationManager.requestWhenInUseAuthorization()
     }
 
-    func getCurrentPlacemark() -> Observable<CLPlacemark> {
+    func getCurrentPlacemark() -> Observable<Placemark> {
         let manager = locationManager
 
         return Observable.create { observer -> Disposable in
             let didChanged = manager.rx.didChangeAuthorization
                 .map { $0.status }
             let authStatus = Observable.merge(.just(CLLocationManager.authorizationStatus()), didChanged)
-                .share(replay: 1)
+                .share()
 
             let location = authStatus
                 .filter { $0 == .authorizedAlways || $0 == .authorizedWhenInUse }
-                .map { _ in manager.startUpdatingLocation() }
-                .flatMap { _ in manager.rx.placemark }
-                .do(onNext: { _ in manager.stopUpdatingLocation() })
+                .map { _ in manager.startMonitoringSignificantLocationChanges() }
+                .flatMapLatest { _ in manager.rx.placemark }
+                .map { $0 as Placemark }
+                .do(onNext: { _ in manager.stopMonitoringSignificantLocationChanges() })
                 .subscribe(observer)
 
             let managerError = manager.rx.didError
@@ -49,6 +54,7 @@ struct LocationService {
 
             return CompositeDisposable(managerError, authError, location)
         }
+        .debug("get placemark")
     }
 }
 
@@ -60,3 +66,10 @@ extension LocationService.Errors: LocalizedError {
         }
     }
 }
+
+protocol Placemark {
+    var locality: String? { get }
+    var location: CLLocation? { get }
+}
+
+extension CLPlacemark: Placemark {  }

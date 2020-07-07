@@ -13,7 +13,7 @@ import RxCocoa
 class ProfileListViewController: BaseViewController, Storyboarded {
 
     private var disposeBag = DisposeBag()
-    let viewModel = ProfileListViewModel(StorageService())
+    let viewModel = ProfileListViewModel()
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addProfileBarButton: UIBarButtonItem!

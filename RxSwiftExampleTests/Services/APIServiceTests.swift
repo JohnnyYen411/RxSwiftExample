@@ -32,10 +32,10 @@ class APIServiceTests: XCTestCase {
         let currentWeatherExpectation = expectation(description: "current weather response")
         apiService.getCurrentWeather(latitude: 35, longitude: 121)
             .subscribe(onNext: { weatherInfo in
-                XCTAssert(weatherInfo.name.count != 0)
+                XCTAssertNotEqual(weatherInfo.name.count, 0)
                 currentWeatherExpectation.fulfill()
             }, onError: { error in
-                XCTAssert(false, "\(error)")
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 

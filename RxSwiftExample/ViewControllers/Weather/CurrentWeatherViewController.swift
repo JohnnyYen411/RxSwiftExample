@@ -13,7 +13,7 @@ import RxCocoa
 class CurrentWeatherViewController: BaseViewController, Storyboarded {
 
     private let disposeBag = DisposeBag()
-    var viewModel = CurrentWeatherViewModel()
+    var viewModel = CurrentWeatherViewModel<LocationService, APIService>()
 
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var currentTempLabel: UILabel!

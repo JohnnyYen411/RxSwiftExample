@@ -41,7 +41,7 @@ class Coordinator<ResultType> {
     func coordinate<T>(to coordinator: Coordinator<T>) -> Observable<T> {
         store(coordinator: coordinator)
         return coordinator.start()
-        .share(replay: 1)
+            .share()
             .do(onNext: { [weak self] _ in self?.free(coordinator: coordinator) })
     }
 }

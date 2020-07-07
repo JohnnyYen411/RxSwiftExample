@@ -10,7 +10,15 @@ import Foundation
 import RxSwift
 import CoreData
 
-struct StorageService {
+protocol StorageServiceProtocol {
+    func fetchAll() -> Observable<[Profile]>
+    func deleteAll() -> Observable<Void>
+    func insert(profile: Profile) -> Observable<Profile>
+    func write(uuid: String, name: String, birthday: String) -> Observable<String>
+    func fetch(uuid: String) -> Observable<Profile>
+}
+
+struct StorageService: StorageServiceProtocol {
 
     enum Errors: Error {
         case fetchAll

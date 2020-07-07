@@ -19,31 +19,13 @@ class AddProfileTests: XCTestCase {
     private var disposeBag: DisposeBag!
     private var mockStorageService: StorageService!
 
-    lazy var mockContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "DataModel")
-        let description = NSPersistentStoreDescription()
-        description.type = NSInMemoryStoreType
-        description.shouldAddStoreAsynchronously = false // Make it simpler in test env
-
-        container.persistentStoreDescriptions = [description]
-        container.loadPersistentStores { (description, error) in
-            // Check if the data store is in memory
-            precondition( description.type == NSInMemoryStoreType )
-
-            // Check if creating container wrong
-            if let error = error {
-                fatalError("Create an in-mem coordinator failed \(error)")
-            }
-        }
-        return container
-    }()
-
-    lazy var mockContext: NSManagedObjectContext = {
-        self.mockContainer.newBackgroundContext()
-    }()
+    private var mockContainer: NSPersistentContainer!
+    private var mockContext: NSManagedObjectContext!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        mockContainer = getMockContainer()
+        mockContext = mockContainer.newBackgroundContext()
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
         mockStorageService = StorageService(container: mockContainer, context: mockContext)
@@ -55,6 +37,8 @@ class AddProfileTests: XCTestCase {
         disposeBag = nil
         scheduler = nil
         mockStorageService = nil
+        mockContext = nil
+        mockContainer = nil
         try super.tearDownWithError()
     }
 
@@ -90,7 +74,7 @@ class AddProfileTests: XCTestCase {
                 XCTAssertEqual($0.count, 1)
                 fetchExpectation.fulfill()
             }, onError: { error in
-                XCTAssertNil(error)
+                XCTFail(error.localizedDescription)
             })
             .disposed(by: disposeBag)
 
@@ -118,4 +102,21 @@ class AddProfileTests: XCTestCase {
 //        }
 //    }
 
+    private func getMockContainer() -> NSPersistentContainer{
+        let container = NSPersistentContainer(name: "DataModel")
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+
+        container.persistentStoreDescriptions = [description]
+        container.loadPersistentStores { (description, error) in
+            // Check if the data store is in memory
+            precondition( description.type == NSInMemoryStoreType )
+
+            // Check if creating container wrong
+            if let error = error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+        return container
+    }
 }
